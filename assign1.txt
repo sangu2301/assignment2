@@ -1,0 +1,58 @@
+# 1) Select Title,Rating and Rental Duration for those having rating PG-13 and G.PG-13 should have rental duration less than 4 and G should have rental duration greater than or equal to 7.
+use sakila;
+select title,rating,rental_duration 
+from film  
+where (rating="PG-13" and rental_duration<4) or (rating="G" and rental_duration>=7);
+
+# 2) Find all of the customers who have rented 40 or more films.
+
+select customer.customer_id,customer.first_name,count(rental.rental_id) as rented_films_nos 
+from customer inner join rental on customer.customer_id=rental.customer_id 
+group by customer_id
+having rented_films_nos >=40;
+
+# 3) Find all customers who rented a film on June 14, 2005. I need most recent rental data at the top and the first and last names should be in alphabetical order
+
+select customer.first_name,customer.last_name,rental.rental_date 
+from customer inner join rental on customer.customer_id=rental.customer_id 
+where date(rental_date)="2005-6-14"
+order by rental_date desc, customer.first_name asc,customer.last_name asc;
+
+# 4) Find  customers whose last name falls between FA and FR
+SELECT last_name 
+FROM customer
+where last_name
+between "fa" and "fs";
+
+# 5) Construct a query that finds all customers whose last name contains an A in the second position and a W anywhere after the A.
+SELECT first_name,last_name 
+FROM customer
+where last_name like '_a%w%';
+ 
+# 6) Find all the customer who haven't rented yet
+select customer_id,first_name 
+from customer 
+where customer_id  NOT IN
+(select customer_id from rental);
+
+#7)Find the maximum number of days between when a film was rented and subsequently returned.
+
+SELECT  max(DATEDIFF( return_date,rental_date)) AS DateDiff 
+from rental 
+ 
+#8)Find rental numbers for each year
+
+select substring(rental_date,1,4) as year_nos,count(rental_id) as nos 
+from rental 
+group by year_nos;
+
+#9)Find no of copies for each film
+
+select a.film_id,b.title,count(*) 
+from inventory  a inner join film b  on a.film_id=b.film_id 
+group  by a.film_id;
+
+# 10)Find no of copies for each film by quarter
+select year(rental_date) as year_,count(rental_id) as nos ,quarter(rental_date)
+from rental 
+group by year(rental_date), quarter(rental_date);
